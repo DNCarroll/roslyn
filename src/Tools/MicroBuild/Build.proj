@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <ProjectDir>$(MSBuildThisFileDirectory)..\..\..\</ProjectDir>
+  </PropertyGroup>
+
+  <Target Name="Build">
+    <!-- Disable during testing as it breaks this script 
+    <Exec Command="git clean -dxf ." WorkingDirectory="$(ProjectDir)" />
+    -->
+
+    <!-- Ignore the exit code because we don't care if the directory already exists.  Just that after
+         this command executes that it does exist -->
+
+    <Exec Command="mkdir Binaries\$(Configuration)" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
+    <Exec Command="Restore.cmd /clean" Condition="'$(Fast)' == ''" WorkingDirectory="$(ProjectDir)" />
+
+    <MSBuild Projects="$(ProjectDir)Roslyn.sln" BuildInParallel="true" />
+    <MSBuild Projects="$(ProjectDir)src\Dependencies\Dependencies.sln" BuildInParallel="true" />
+    <MSBuild Projects="$(ProjectDir)src\Setup\SetupStep1.proj" />
+
+    <!-- TODO: pass arguments -->
+    <Exec Command="$(ProjectDir)Binaries\$(Configuration)\SignRoslyn\SignRoslyn.exe" WorkingDirectory="$(ProjectDir)" />
+
+
+    <MSBuild Projects="$(ProjectDir)src\NuGet\NuGet.proj" />
+    <MSBuild Projects="$(ProjectDir)src\Setup\SetupStep2.proj" />
+
+    <Exec Command="powershell -noprofile -executionPolicy ByPass -file $(MSBuildThisFileDirectory\stop-compiler-server.ps1" />
+
+    <MSBuild Projects="$(ProjectDir)BuildAndTest.proj" Targets="Test" />
+
+  </Target>
+
+</Project>
+
