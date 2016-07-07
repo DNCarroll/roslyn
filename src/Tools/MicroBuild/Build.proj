@@ -13,7 +13,6 @@
     <!-- Ignore the exit code because we don't care if the directory already exists.  Just that after
          this command executes that it does exist -->
 
-    <Exec Command="mkdir Binaries\$(Configuration)" WorkingDirectory="$(ProjectDir)" IgnoreExitCode="true" />
     <Exec Command="Restore.cmd /clean" Condition="'$(Fast)' == ''" WorkingDirectory="$(ProjectDir)" />
 
     <MSBuild Projects="$(ProjectDir)Roslyn.sln" BuildInParallel="true" />
@@ -22,7 +21,6 @@
 
     <!-- TODO: pass arguments -->
     <Exec Command="$(ProjectDir)Binaries\$(Configuration)\SignRoslyn\SignRoslyn.exe" WorkingDirectory="$(ProjectDir)" />
-
 
     <MSBuild Projects="$(ProjectDir)src\NuGet\NuGet.proj" />
     <MSBuild Projects="$(ProjectDir)src\Setup\SetupStep2.proj" />

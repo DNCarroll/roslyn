@@ -4,7 +4,6 @@
 
   <Target Name="Build">
     <!-- Build CoreXT packages for insertion into DevDiv (order of the following actions matters) -->
-    <MSBuild Projects="DevDivInsertionFiles\DevDivInsertionFiles.sln" />
     <MSBuild Projects="DevDivVsix\CompilersPackage\Microsoft.CodeAnalysis.Compilers.vsmanproj" Condition="'$(RunningInMicroBuild)' == 'true'" />
     <MSBuild Projects="DevDivVsix\MicrosoftCodeAnalysisLanguageServices\Microsoft.CodeAnalysis.LanguageServices.vsmanproj" Condition="'$(RunningInMicroBuild)' == 'true'" />
 
